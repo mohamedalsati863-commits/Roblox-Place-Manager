@@ -3,33 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblox Place Manager</title>
+    <title>لوحة إدارة مابات روبلوكس</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; text-align: center; padding: 20px; }
-        .card { background: #2a2a2a; border-radius: 8px; padding: 20px; max-width: 400px; margin: 20px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        input, button { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; }
-        input { background: #333; color: #fff; }
-        button { background: #00a2ff; color: #fff; font-weight: bold; cursor: pointer; }
-        button:hover { background: #0088cc; }
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent-color: #00a2ff;
+            --text-color: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 20px;
+            color: var(--accent-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: #2a2a2a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0081cc;
+        }
+
+        .status-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-message.success {
+            background-color: rgba(40, 167, 69, 0.2);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+            display: block;
+        }
+
+        .status-message.error {
+            background-color: rgba(220, 53, 69, 0.2);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+            display: block;
+        }
     </style>
 </head>
 <body>
 
     <h1>لوحة إدارة مابات روبلوكس</h1>
 
-    <div class="card">
-        <h3>تعديل معلومات الماب</h3>
-        <input type="text" placeholder="اسم الماب الجديد">
-        <input type="text" placeholder="الوصف الجديد">
-        <button>حفظ التغييرات</button>
+    <div class="container">
+        <!-- قسم إعدادات API -->
+        <div class="card">
+            <h2>إعدادات الاتصال (Roblox Open Cloud)</h2>
+            <div class="form-group">
+                <label for="apiKey">مفتاح الـ API Key:</label>
+                <input type="password" id="apiKey" placeholder="أدخل Roblox Open Cloud API Key">
+            </div>
+            <div class="form-group">
+                <label for="universeId">رقم الماب الرئيسي (Universe ID):</label>
+                <input type="text" id="universeId" placeholder="مثال: 1234567890">
+            </div>
+            <button onclick="saveConfig()">حفظ إعدادات الاتصال</button>
+            <div id="configStatus" class="status-message"></div>
+        </div>
+
+        <!-- قسم تعديل معلومات الماب -->
+        <div class="card">
+            <h2>تعديل معلومات الماب</h2>
+            <div class="form-group">
+                <label for="placeName">اسم الماب الجديد:</label>
+                <input type="text" id="placeName" placeholder="أدخل اسم الماب">
+            </div>
+            <div class="form-group">
+                <label for="placeDescription">الوصف الجديد:</label>
+                <textarea id="placeDescription" rows="3" placeholder="أدخل وصف الماب"></textarea>
+            </div>
+            <button onclick="updatePlaceInfo()">حفظ التغييرات</button>
+            <div id="updateStatus" class="status-message"></div>
+        </div>
+
+        <!-- قسم إنشاء Place جديد -->
+        <div class="card">
+            <h2>إنشاء Place جديد</h2>
+            <div class="form-group">
+                <label for="newPlaceName">اسم الـ Place الجديد:</label>
+                <input type="text" id="newPlaceName" placeholder="أدخل الاسم">
+            </div>
+            <div class="form-group">
+                <label for="newPlaceDescription">الوصف (اختياري):</label>
+                <textarea id="newPlaceDescription" rows="2" placeholder="أدخل الوصف"></textarea>
+            </div>
+            <button onclick="createNewPlace()">إنشاء الآن</button>
+            <div id="createStatus" class="status-message"></div>
+        </div>
     </div>
 
-    <div class="card">
-        <h3>إنشاء Place جديد</h3>
-        <input type="text" placeholder="اسم الـ Place الجديد">
-        <button>إنشاء الآن</button>
-    </div>
+    <script>
+        // تحميل البيانات المحفوظة إن وجدت
+        window.onload = function() {
+            if (localStorage.getItem('roblox_api_key')) {
+                document.getElementById('apiKey').value = localStorage.getItem('roblox_api_key');
+            }
+            if (localStorage.getItem('roblox_universe_id')) {
+                document.getElementById('universeId').value = localStorage.getItem('roblox_universe_id');
+            }
+        };
 
+        function saveConfig() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const universeId = document.getElementById('universeId').value.trim();
+            const statusDiv = document.getElementById('configStatus');
+
+            if (!apiKey || !universeId) {
+                showStatus(statusDiv, 'يرجى إدخال الـ API Key و Universe ID بشكل صحيح.', false);
+                return;
+            }
+
+            localStorage.setItem('roblox_api_key', apiKey);
+            localStorage.setItem('roblox_universe_id', universeId);
+            showStatus(statusDiv, 'تم حفظ إعدادات الاتصال بنجاح!', true);
+        }
+
+        async function updatePlaceInfo() {
+            const apiKey = localStorage.getItem('roblox_api_key');
+            const universeId = localStorage.getItem('roblox_universe_id');
+            const name = document.getElementById('placeName').value.trim();
+            const description = document.getElementById('placeDescription').value.trim();
+            const statusDiv = document.getElementById('updateStatus');
+
+            if (!apiKey || !universeId) {
+                showStatus(statusDiv, 'يرجى حفظ إعدادات الاتصال أولاً في الأعلى.', false);
+                return;
+            }
+
+            if (!name) {
+                showStatus(statusDiv, 'يرجى كتابة اسم الماب الجديد.', false);
+                return;
+            }
+
+            showStatus(statusDiv, 'جاري إرسال التحديثات لـ Roblox...', true);
+
+            try {
+                const response = await fetch(`https://apis.roblox.com/universes/v1/${universeId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'x-api-key': apiKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        description: description
+                    })
+                });
+
+                if (response.ok) {
+                    showStatus(statusDiv, 'تم تحديث معلومات الماب بنجاح!', true);
+                } else {
+                    const errData = await response.json().catch(() => ({}));
+                    showStatus(statusDiv, `فشل التحديث: ${errData.message || response.statusText}`, false);
+                }
+            } catch (error) {
+                showStatus(statusDiv, `حدث خطأ في الاتصال: ${error.message}`, false);
+            }
+        }
+
+        async function createNewPlace() {
+            const apiKey = localStorage.getItem('roblox_api_key');
+            const universeId = localStorage.getItem('roblox_universe_id');
+            const name = document.getElementById('newPlaceName').value.trim();
+            const description = document.getElementById('newPlaceDescription').value.trim();
+            const statusDiv = document.getElementById('createStatus');
+
+            if (!apiKey || !universeId) {
+                showStatus(statusDiv, 'يرجى حفظ إعدادات الاتصال أولاً في الأعلى.', false);
+                return;
+            }
+
+            if (!name) {
+                showStatus(statusDiv, 'يرجى كتابة اسم الـ Place.', false);
+                return;
+            }
+
+            showStatus(statusDiv, 'جاري إنشاء Place جديد...', true);
+
+            try {
+                const response = await fetch(`https://apis.roblox.com/universes/v1/${universeId}/places`, {
+                    method: 'POST',
+                    headers: {
+                        'x-api-key': apiKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: name,
+                        description: description
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showStatus(statusDiv, `تم إنشاء الـ Place بنجاح! ID: ${data.placeId || 'مكتمل'}`, true);
+                } else {
+                    const errData = await response.json().catch(() => ({}));
+                    showStatus(statusDiv, `فشل الإنشاء: ${errData.message || response.statusText}`, false);
+                }
+            } catch (error) {
+                showStatus(statusDiv, `حدث خطأ في الاتصال: ${error.message}`, false);
+            }
+        }
+
+        function showStatus(element, message, isSuccess) {
+            element.innerText = message;
+            element.className = 'status-message ' + (isSuccess ? 'success' : 'error');
+        }
+    </script>
 </body>
 </html>
-        
