@@ -1,33 +1,70 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحديثات وتسريبات Blox Fruits</title>
+    <title>مولد أسماء روبلوكس الثلاثية</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1 class="main-title">مركز أخبار وتسريبات Blox Fruits</h1>
+    <div class="container">
+        <h1>🎲 مولد اليوزرات الثلاثية العشوائية</h1>
+        <p>اضغط ابدأ لبدء التوليد التلقائي أو إيقاف عند الرغبة:</p>
 
-    <div class="content-grid">
-        <!-- قسم الأخبار والتسريبات -->
-        <div class="card">
-            <h2>آخر التسريبات (X / تويتر)</h2>
-            <p>تابع أحدث التسريبات والتحديثات القادمة مباشرة من المطورين عبر الحساب الرسمي:</p>
-            <a href="https://twitter.com/BloxFruits" target="_blank" class="btn-link">
-                🔗 الانتقال إلى حساب Blox Fruits الرسمي
+        <div class="result-box">
+            <span id="username">---</span>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn" onclick="startGenerating()" class="btn btn-start">Start (ابدأ)</button>
+            <button id="stopBtn" onclick="stopGenerating()" class="btn btn-stop" disabled>Stop (إيقاف)</button>
+        </div>
+        
+        <div id="check-link-container" style="display: none; margin-top: 20px;">
+            <a id="check-link" href="#" target="_blank" class="btn-check">
+                🔍 تحقق من توفر هذا الاسم في Roblox
             </a>
         </div>
-
-        <!-- قسم الفيديو -->
-        <div class="card">
-            <h2>أحدث الإعلانات والتحديثات</h2>
-            <div class="video-responsive">
-                <iframe src="https://www.youtube.com/embed/videoseries?list=PL3vA_J__B89X-VdZfR336WlH-1O19z3pE" title="Blox Fruits Updates" allowfullscreen></iframe>
-            </div>
-        </div>
     </div>
+
+    <script>
+        let timer = null;
+
+        function generateSingle() {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789_';
+            let result = '';
+            
+            for (let i = 0; i < 3; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            document.getElementById('username').innerText = result;
+
+            const checkLink = document.getElementById('check-link');
+            checkLink.href = `https://www.roblox.com/search/users?keyword=${result}`;
+            document.getElementById('check-link-container').style.display = 'block';
+        }
+
+        function startGenerating() {
+            // تشغيل التوليد كل 200 مللي ثانية (5 أسماء في الثانية)
+            timer = setInterval(generateSingle, 200);
+
+            // تفعيل وتعيين الأزرار
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+        }
+
+        function stopGenerating() {
+            // إيقاف العداد التلقائي
+            clearInterval(timer);
+
+            // تعديل حالة الأزرار
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+        }
+    </script>
 
 </body>
 </html>
