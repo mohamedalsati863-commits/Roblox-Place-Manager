@@ -26,6 +26,19 @@
     <script>
         let timer = null;
 
+        function copyUsername(text, buttonEl) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = buttonEl.innerText;
+                buttonEl.innerText = 'تم النسخ! ✓';
+                buttonEl.classList.add('copied');
+                
+                setTimeout(() => {
+                    buttonEl.innerText = originalText;
+                    buttonEl.classList.remove('copied');
+                }, 1200);
+            });
+        }
+
         function generateSingle() {
             const chars = 'abcdefghijklmnopqrstuvwxyz0123456789_';
             let result = '';
@@ -42,24 +55,21 @@
                 placeholder.remove();
             }
 
-            // إنشاء عنصر جديد يضاف في أسفل القائمة
+            // إنشاء عنصر جديد يحتوي على اليوزر وزر النسخ
             const item = document.createElement('div');
             item.className = 'user-item';
             item.innerHTML = `
                 <span class="username-text">${result}</span>
-                <a href="https://www.roblox.com/search/users?keyword=${result}" target="_blank" class="check-link">
-                    🔍 تحقق
-                </a>
+                <button class="btn-copy" onclick="copyUsername('${result}', this)">📋 نسخ</button>
             `;
 
             listBox.appendChild(item);
 
-            // التمرير التلقائي للأسفل لرؤية أحدث اسم
+            // التمرير التلقائي للأسفل
             listBox.scrollTop = listBox.scrollHeight;
         }
 
         function startGenerating() {
-            // توليد اسم جديد كل 300 مللي ثانية
             timer = setInterval(generateSingle, 300);
 
             document.getElementById('startBtn').disabled = true;
