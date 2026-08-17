@@ -9,22 +9,17 @@
 <body>
 
     <div class="container">
-        <h1>🎲 مولد اليوزرات الثلاثية العشوائية</h1>
-        <p>اضغط ابدأ لبدء التوليد التلقائي أو إيقاف عند الرغبة:</p>
-
-        <div class="result-box">
-            <span id="username">---</span>
-        </div>
+        <h1>🎲 توليد اليوزرات الثلاثية (سجل مباشر)</h1>
+        <p>اضغط ابدأ لبدء توليد القائمة، واضغط إيقاف عند الرغبة:</p>
 
         <div class="controls">
             <button id="startBtn" onclick="startGenerating()" class="btn btn-start">Start (ابدأ)</button>
             <button id="stopBtn" onclick="stopGenerating()" class="btn btn-stop" disabled>Stop (إيقاف)</button>
         </div>
-        
-        <div id="check-link-container" style="display: none; margin-top: 20px;">
-            <a id="check-link" href="#" target="_blank" class="btn-check">
-                🔍 تحقق من توفر هذا الاسم في Roblox
-            </a>
+
+        <!-- صندوق القائمة المتجددة -->
+        <div class="list-box" id="listBox">
+            <div class="placeholder">اضغط ابدأ للبدء...</div>
         </div>
     </div>
 
@@ -39,27 +34,41 @@
                 result += chars.charAt(Math.floor(Math.random() * chars.length));
             }
 
-            document.getElementById('username').innerText = result;
+            const listBox = document.getElementById('listBox');
+            
+            // إزالة النص الأولي عند أول توليد
+            const placeholder = listBox.querySelector('.placeholder');
+            if (placeholder) {
+                placeholder.remove();
+            }
 
-            const checkLink = document.getElementById('check-link');
-            checkLink.href = `https://www.roblox.com/search/users?keyword=${result}`;
-            document.getElementById('check-link-container').style.display = 'block';
+            // إنشاء عنصر جديد يضاف في أسفل القائمة
+            const item = document.createElement('div');
+            item.className = 'user-item';
+            item.innerHTML = `
+                <span class="username-text">${result}</span>
+                <a href="https://www.roblox.com/search/users?keyword=${result}" target="_blank" class="check-link">
+                    🔍 تحقق
+                </a>
+            `;
+
+            listBox.appendChild(item);
+
+            // التمرير التلقائي للأسفل لرؤية أحدث اسم
+            listBox.scrollTop = listBox.scrollHeight;
         }
 
         function startGenerating() {
-            // تشغيل التوليد كل 200 مللي ثانية (5 أسماء في الثانية)
-            timer = setInterval(generateSingle, 200);
+            // توليد اسم جديد كل 300 مللي ثانية
+            timer = setInterval(generateSingle, 300);
 
-            // تفعيل وتعيين الأزرار
             document.getElementById('startBtn').disabled = true;
             document.getElementById('stopBtn').disabled = false;
         }
 
         function stopGenerating() {
-            // إيقاف العداد التلقائي
             clearInterval(timer);
 
-            // تعديل حالة الأزرار
             document.getElementById('startBtn').disabled = false;
             document.getElementById('stopBtn').disabled = true;
         }
