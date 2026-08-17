@@ -14,6 +14,7 @@
             --border-color: #333333;
             --success-color: #28a745;
             --error-color: #dc3545;
+            --info-bg: #1a2733;
         }
 
         * {
@@ -81,6 +82,21 @@
             color: var(--accent-color);
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 8px;
+        }
+
+        .info-box {
+            background-color: var(--info-bg);
+            border-right: 4px solid var(--accent-color);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .info-box ul {
+            margin-right: 20px;
+            margin-top: 5px;
         }
 
         .form-group {
@@ -154,7 +170,6 @@
             display: none !important;
         }
 
-        /* تحسينات الشاشة للكمبيوتر والجوال */
         @media (min-width: 768px) {
             body {
                 padding: 40px 20px;
@@ -172,20 +187,31 @@
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول: Textbox واحد فقط للـ API Key -->
-    <div id="loginScreen" class="container" style="margin-top: 50px; max-width: 450px;">
+    <!-- شاشة تسجيل الدخول -->
+    <div id="loginScreen" class="container" style="margin-top: 30px; max-width: 500px;">
         <div class="card">
             <h2>🔑 أدخل مفتاح الـ API Key</h2>
-            <div class="form-group">
-                <label for="apiKey">Roblox API Key:</label>
-                <input type="password" id="apiKey" placeholder="أدخل المفتاح هنا لفتح اللوحة">
+            
+            <!-- صندوق تعليمات الصلاحيات المطلوبة -->
+            <div class="info-box">
+                <strong>📋 الصلاحيات المطلوبة في API Key:</strong>
+                <p>عند إنشاء المفتاح في موقع Roblox Creator Dashboard، أضف الصلاحيات التالية:</p>
+                <ul>
+                    <li><b>Experience Place:</b> حدد <code>Write</code> (إنشاء Places)</li>
+                    <li><b>Experience Details:</b> حدد <code>Write</code> (تعديل البيانات)</li>
+                </ul>
             </div>
-            <button onclick="login()">دخول</button>
+
+            <div class="form-group">
+                <label for="apiKey">Roblox Open Cloud API Key:</label>
+                <input type="password" id="apiKey" placeholder="أدخل المفتاح هنا">
+            </div>
+            <button onclick="login()">دخول للوحة التحكم</button>
             <div id="loginStatus" class="status-message"></div>
         </div>
     </div>
 
-    <!-- شاشة اللوحة الرئيسية (تفتح بعد إدخال الـ API Key) -->
+    <!-- شاشة اللوحة الرئيسية -->
     <div id="dashboardScreen" class="container hidden">
         <div class="header">
             <h1>📊 لوحة تحكم المابات</h1>
@@ -234,6 +260,8 @@
     </div>
 
     <script>
+        const CORS_PROXY = "https://corsproxy.io/?";
+
         window.onload = function() {
             const savedKey = localStorage.getItem('roblox_api_key');
             if (savedKey) {
@@ -277,7 +305,7 @@
             const statusDiv = document.getElementById('createStatus');
 
             if (!universeId) {
-                showStatus(statusDiv, '❌ يرجى أدخال رقم الـ Universe ID.', false);
+                showStatus(statusDiv, '❌ يرجى إدخال رقم الـ Universe ID.', false);
                 return;
             }
 
@@ -289,7 +317,8 @@
             showStatus(statusDiv, '⏳ جاري إرسال الطلب...', true);
 
             try {
-                const response = await fetch(`https://apis.roblox.com/universes/v1/${universeId}/places`, {
+                const targetUrl = `https://apis.roblox.com/universes/v1/${universeId}/places`;
+                const response = await fetch(CORS_PROXY + encodeURIComponent(targetUrl), {
                     method: 'POST',
                     headers: {
                         'x-api-key': apiKey,
@@ -307,7 +336,7 @@
                 } else if (response.status === 401) {
                     showStatus(statusDiv, `❌ الـ API Key غير صحيح!`, false);
                 } else if (response.status === 403) {
-                    showStatus(statusDiv, `⚠️ لا تملك الصلاحيات الكافية! تحتاج صلاحية: universe-place:write`, false);
+                    showStatus(statusDiv, `⚠️ لا تملك الصلاحيات الكافية! اختر صلاحية: Experience Place (Write)`, false);
                 } else {
                     const errData = await response.json().catch(() => ({}));
                     showStatus(statusDiv, `❌ فشل الإنشاء: ${errData.message || response.statusText}`, false);
@@ -325,7 +354,7 @@
             const statusDiv = document.getElementById('updateStatus');
 
             if (!universeId) {
-                showStatus(statusDiv, '❌ يرجى أدخال رقم الـ Universe ID.', false);
+                showStatus(statusDiv, '❌ يرجى إدخال رقم الـ Universe ID.', false);
                 return;
             }
 
@@ -337,7 +366,8 @@
             showStatus(statusDiv, '⏳ جاري الحفظ...', true);
 
             try {
-                const response = await fetch(`https://apis.roblox.com/universes/v1/${universeId}`, {
+                const targetUrl = `https://apis.roblox.com/universes/v1/${universeId}`;
+                const response = await fetch(CORS_PROXY + encodeURIComponent(targetUrl), {
                     method: 'PATCH',
                     headers: {
                         'x-api-key': apiKey,
@@ -354,7 +384,7 @@
                 } else if (response.status === 401) {
                     showStatus(statusDiv, `❌ الـ API Key غير صحيح!`, false);
                 } else if (response.status === 403) {
-                    showStatus(statusDiv, `⚠️ لا تملك الصلاحيات الكافية! تحتاج صلاحية: universe:write`, false);
+                    showStatus(statusDiv, `⚠️ لا تملك الصلاحيات الكافية! اختر صلاحية: Experience Details (Write)`, false);
                 } else {
                     const errData = await response.json().catch(() => ({}));
                     showStatus(statusDiv, `❌ فشل التحديث: ${errData.message || response.statusText}`, false);
