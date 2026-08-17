@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Coding - Advanced Assistant</title>
-    <!-- Highlight.js for Syntax Highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
     <style>
@@ -35,9 +34,8 @@
             overflow: hidden;
         }
 
-        /* Sidebar Control */
         .sidebar {
-            width: 300px;
+            width: 280px;
             background-color: var(--bg-card);
             border-right: 1px solid var(--border);
             padding: 20px;
@@ -49,9 +47,6 @@
         .sidebar h2 {
             font-size: 18px;
             color: #58a6ff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .form-group {
@@ -66,7 +61,7 @@
             font-weight: bold;
         }
 
-        input, select {
+        select {
             background-color: var(--bg-main);
             border: 1px solid var(--border);
             color: var(--text-main);
@@ -76,11 +71,6 @@
             outline: none;
         }
 
-        input:focus, select:focus {
-            border-color: #58a6ff;
-        }
-
-        /* Main Content */
         .main-content {
             flex: 1;
             display: flex;
@@ -128,7 +118,6 @@
             width: 90%;
         }
 
-        /* Code Blocks Formatting */
         pre {
             position: relative;
             margin: 10px 0;
@@ -156,11 +145,6 @@
             cursor: pointer;
         }
 
-        .copy-btn:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        /* Input Control */
         .input-area {
             padding: 15px 20px;
             background-color: var(--bg-card);
@@ -182,10 +166,6 @@
             outline: none;
         }
 
-        textarea:focus {
-            border-color: #58a6ff;
-        }
-
         button.send-btn {
             background-color: var(--accent);
             color: white;
@@ -194,36 +174,22 @@
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        button.send-btn:hover {
-            background-color: var(--accent-hover);
         }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar Control -->
     <div class="sidebar">
-        <h2>⚡ AI Coding Controls</h2>
-        
-        <div class="form-group">
-            <label for="apiKey">DeepSeek API Key:</label>
-            <!-- sk-7ee8ab7ff8dc4fe19997c686ad795cfe -->
-            <input type="password" id="apiKey" placeholder="sk-..." onchange="saveApiKey()">
-        </div>
+        <h2>⚡ AI Coding</h2>
 
         <div class="form-group">
-            <label for="targetLang">Target Programming Language:</label>
+            <label for="targetLang">Target Language:</label>
             <select id="targetLang">
                 <option value="Auto">Auto Detect</option>
-                <option value="Python">Python</option>
                 <option value="Lua / Roblox">Lua (Roblox)</option>
-                <option value="JavaScript / TS">JavaScript / TypeScript</option>
+                <option value="Python">Python</option>
+                <option value="JavaScript">JavaScript</option>
                 <option value="C++">C++</option>
-                <option value="C# / Unity">C# (Unity)</option>
-                <option value="HTML/CSS">HTML / CSS</option>
             </select>
         </div>
 
@@ -231,13 +197,11 @@
             <label for="aiMode">Mode:</label>
             <select id="aiMode">
                 <option value="code">💻 Full Senior Coding & Debugging</option>
-                <option value="explain">🔍 Code Explanation & Review</option>
-                <option value="general">💬 General Programming Advice</option>
+                <option value="explain">🔍 Code Explanation</option>
             </select>
         </div>
     </div>
 
-    <!-- Main Window -->
     <div class="main-content">
         <div class="chat-header">
             <h3>🤖 AI Coding Assistant (DeepSeek Powered)</h3>
@@ -245,7 +209,7 @@
 
         <div class="chat-messages" id="chatMessages">
             <div class="message assistant">
-                Welcome to <b>AI Coding</b>! I am your senior software development assistant powered by DeepSeek. Ask me any programming questions or general queries.
+                Welcome to <b>AI Coding</b>! Ask me any programming questions or paste code.
             </div>
         </div>
 
@@ -256,17 +220,10 @@
     </div>
 
     <script>
-        window.onload = function() {
-            const savedKey = localStorage.getItem('deepseek_api_key');
-            if (savedKey) {
-                document.getElementById('apiKey').value = savedKey;
-            }
-        };
-
-        function saveApiKey() {
-            const key = document.getElementById('apiKey').value.trim();
-            localStorage.setItem('deepseek_api_key', key);
-        }
+        // ==========================================
+        // ضع مفتاح API الخاص بك هنا بين التنصيص
+        // ==========================================
+        const HARDCODED_API_KEY = "sk-7ee8ab7ff8dc4fe19997c686ad795cfe";
 
         function handleKeyDown(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -276,16 +233,10 @@
         }
 
         async function sendMessage() {
-            const apiKey = localStorage.getItem('deepseek_api_key') || document.getElementById('apiKey').value.trim();
             const inputField = document.getElementById('userInput');
             const userText = inputField.value.trim();
             const lang = document.getElementById('targetLang').value;
             const mode = document.getElementById('aiMode').value;
-
-            if (!apiKey) {
-                alert('Please enter your DeepSeek API Key in the sidebar first!');
-                return;
-            }
 
             if (!userText) return;
 
@@ -294,23 +245,20 @@
 
             const loadingId = appendMessage('⏳ Thinking...', 'assistant');
 
-            const systemPrompt = `You are "AI Coding", an elite Senior Software Engineer powered by DeepSeek.
-You excel at writing high-performance, clean, and bug-free code across all languages (Python, Lua, JavaScript, C++, C#, etc.).
-Context Language: ${lang}.
+            const systemPrompt = `You are "AI Coding", an elite Senior Software Engineer.
+Target Language: ${lang}.
 Mode: ${mode}.
-
-Guidelines:
-1. For coding requests: Output properly formatted code blocks. Ensure syntax is correct and well-commented.
-2. For non-coding requests: Answer directly and accurately without forcing coding syntax.
-3. Keep answers concise, highly technical, and production-ready.`;
+Provide code in proper markdown code blocks. Always give high quality, bug-free solutions.`;
 
             try {
-                // Connecting to DeepSeek API Endpoint
-                const response = await fetch('https://api.deepseek.com/chat/completions', {
+                // استخدام corsproxy لتخطي حظر الاتصال المباشر من المتصفح
+                const apiUrl = 'https://corsproxy.io/?' + encodeURIComponent('https://api.deepseek.com/chat/completions');
+
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
+                        'Authorization': `Bearer ${HARDCODED_API_KEY}`
                     },
                     body: JSON.stringify({
                         model: 'deepseek-chat',
@@ -330,7 +278,7 @@ Guidelines:
                     loadingElem.innerHTML = formatMarkdown(aiReply);
                     hljs.highlightAll();
                 } else {
-                    loadingElem.innerText = `❌ API Error: ${data.error ? data.error.message : 'Check your API Key'}`;
+                    loadingElem.innerText = `❌ Error: ${data.error ? data.error.message : 'Invalid API Key or Limit Reached'}`;
                 }
             } catch (err) {
                 document.getElementById(loadingId).innerText = `❌ Connection Error: ${err.message}`;
