@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مولد أسماء روبلوكس الثلاثية</title>
+    <title>مولد أسماء روبلوكس الثلاثية والرباعية</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="container">
-        <h1>🎲 توليد اليوزرات الثلاثية (سجل مباشر)</h1>
+        <h1>🎲 توليد يوزرات ثلاثية ورباعية عشوائية</h1>
         <p>اضغط ابدأ لبدء توليد القائمة، واضغط إيقاف عند الرغبة:</p>
 
         <div class="controls">
@@ -43,7 +43,10 @@
             const chars = 'abcdefghijklmnopqrstuvwxyz0123456789_';
             let result = '';
             
-            for (let i = 0; i < 3; i++) {
+            // اختيار طول الاسم عشوائياً (إما 3 أو 4 خانات)
+            const length = Math.random() < 0.5 ? 3 : 4;
+            
+            for (let i = 0; i < length; i++) {
                 result += chars.charAt(Math.floor(Math.random() * chars.length));
             }
 
