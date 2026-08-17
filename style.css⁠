@@ -67,7 +67,7 @@ h1 {
     cursor: not-allowed;
 }
 
-/* تصميم قائمة الأسماء المتتالية */
+/* قائمة الأسماء */
 .list-box {
     background-color: #0f172a;
     border: 1px solid #334155;
@@ -88,7 +88,7 @@ h1 {
 .user-item {
     background-color: #1e293b;
     border: 1px solid #334155;
-    padding: 10px 15px;
+    padding: 8px 15px;
     border-radius: 6px;
     display: flex;
     justify-content: space-between;
@@ -102,13 +102,25 @@ h1 {
     letter-spacing: 2px;
 }
 
-.check-link {
-    color: #38bdf8;
-    text-decoration: none;
+/* زر النسخ */
+.btn-copy {
+    background-color: #38bdf8;
+    color: #0f172a;
+    border: none;
+    padding: 6px 14px;
     font-size: 0.85rem;
     font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.check-link:hover {
-    text-decoration: underline;
+.btn-copy:hover {
+    background-color: #0284c7;
+    color: white;
+}
+
+.btn-copy.copied {
+    background-color: #22c55e;
+    color: white;
 }
