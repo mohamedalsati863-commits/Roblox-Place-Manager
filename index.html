@@ -187,24 +187,23 @@
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول -->
+    <!-- شاشة تسجيل الدخول: Textbox واحد للـ API Key مع الصلاحيات المطلوب إنشاء المفتاح بها -->
     <div id="loginScreen" class="container" style="margin-top: 30px; max-width: 500px;">
         <div class="card">
             <h2>🔑 أدخل مفتاح الـ API Key</h2>
             
-            <!-- صندوق تعليمات الصلاحيات المطلوبة -->
             <div class="info-box">
-                <strong>📋 الصلاحيات المطلوبة في API Key:</strong>
-                <p>عند إنشاء المفتاح في موقع Roblox Creator Dashboard، أضف الصلاحيات التالية:</p>
+                <strong>📋 الصلاحيات المطلوبة في Roblox Creator Dashboard:</strong>
+                <p>قبل إنشاء المفتاح، تأكد من إعطائه الصلاحيات التالية:</p>
                 <ul>
-                    <li><b>Experience Place:</b> حدد <code>Write</code> (إنشاء Places)</li>
-                    <li><b>Experience Details:</b> حدد <code>Write</code> (تعديل البيانات)</li>
+                    <li><b>Experience Place:</b> حدد <code>Write</code> (لإنشاء Places جديدة)</li>
+                    <li><b>Experience Details:</b> حدد <code>Write</code> (لتعديل اسم ووصف الماب)</li>
                 </ul>
             </div>
 
             <div class="form-group">
                 <label for="apiKey">Roblox Open Cloud API Key:</label>
-                <input type="password" id="apiKey" placeholder="أدخل المفتاح هنا">
+                <input type="password" id="apiKey" placeholder="أدخل المفتاح الخاص بك">
             </div>
             <button onclick="login()">دخول للوحة التحكم</button>
             <div id="loginStatus" class="status-message"></div>
@@ -273,8 +272,8 @@
             const apiKey = document.getElementById('apiKey').value.trim();
             const statusDiv = document.getElementById('loginStatus');
 
-            if (!apiKey) {
-                showStatus(statusDiv, '❌ يرجى إدخال الـ API Key أولاً.', false);
+            if (!apiKey || apiKey.length < 10) {
+                showStatus(statusDiv, '❌ يرجى إدخال API Key صحيح وصالح.', false);
                 return;
             }
 
@@ -334,9 +333,9 @@
                     const data = await response.json();
                     showStatus(statusDiv, `🎉 تم إنشاء الـ Place بنجاح! رقم الـ ID: ${data.placeId || JSON.stringify(data)}`, true);
                 } else if (response.status === 401) {
-                    showStatus(statusDiv, `❌ الـ API Key غير صحيح!`, false);
+                    showStatus(statusDiv, `❌ مفتاح الـ API Key غير صحيح!`, false);
                 } else if (response.status === 403) {
-                    showStatus(statusDiv, `⚠️ لا تملك الصلاحيات الكافية! اختر صلاحية: Experience Place (Write)`, false);
+                    showStatus(statusDiv, `⚠️ لا يوجد الصلاحيات الصحيحة!<br><b>الصلاحية المطلوبة:</b> <code>Experience Place (Write)</code>`, false);
                 } else {
                     const errData = await response.json().catch(() => ({}));
                     showStatus(statusDiv, `❌ فشل الإنشاء: ${errData.message || response.statusText}`, false);
@@ -382,9 +381,9 @@
                 if (response.ok) {
                     showStatus(statusDiv, '✅ تم تحديث الماب بنجاح!', true);
                 } else if (response.status === 401) {
-                    showStatus(statusDiv, `❌ الـ API Key غير صحيح!`, false);
+                    showStatus(statusDiv, `❌ مفتاح الـ API Key غير صحيح!`, false);
                 } else if (response.status === 403) {
-                    showStatus(statusDiv, `⚠️ لا تملك الصلاحيات الكافية! اختر صلاحية: Experience Details (Write)`, false);
+                    showStatus(statusDiv, `⚠️ لا يوجد الصلاحيات الصحيحة!<br><b>الصلاحية المطلوبة:</b> <code>Experience Details (Write)</code>`, false);
                 } else {
                     const errData = await response.json().catch(() => ({}));
                     showStatus(statusDiv, `❌ فشل التحديث: ${errData.message || response.statusText}`, false);
