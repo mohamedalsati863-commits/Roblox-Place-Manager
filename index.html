@@ -187,30 +187,34 @@
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول: Textbox واحد للـ API Key مع الصلاحيات المطلوب إنشاء المفتاح بها -->
+    <!-- شاشة تسجيل الدخول والتحقق -->
     <div id="loginScreen" class="container" style="margin-top: 30px; max-width: 500px;">
         <div class="card">
-            <h2>🔑 أدخل مفتاح الـ API Key</h2>
+            <h2>🔑 تسجيل الدخول بالـ API Key</h2>
             
             <div class="info-box">
-                <strong>📋 الصلاحيات المطلوبة في Roblox Creator Dashboard:</strong>
-                <p>قبل إنشاء المفتاح، تأكد من إعطائه الصلاحيات التالية:</p>
+                <strong>📋 الصلاحيات المطلوبة للمفتاح:</strong>
+                <p>تأكد من تفعيل الصلاحيات التالية في Roblox Creator Dashboard:</p>
                 <ul>
-                    <li><b>Experience Place:</b> حدد <code>Write</code> (لإنشاء Places جديدة)</li>
-                    <li><b>Experience Details:</b> حدد <code>Write</code> (لتعديل اسم ووصف الماب)</li>
+                    <li><code>universe-place:write</code> (Experience Place - Write)</li>
+                    <li><code>universe:write</code> (Experience Details - Write)</li>
                 </ul>
             </div>
 
             <div class="form-group">
-                <label for="apiKey">Roblox Open Cloud API Key:</label>
-                <input type="password" id="apiKey" placeholder="أدخل المفتاح الخاص بك">
+                <label for="apiKey">Roblox API Key:</label>
+                <input type="password" id="apiKey" placeholder="أدخل المفتاح هنا">
             </div>
-            <button onclick="login()">دخول للوحة التحكم</button>
+            <div class="form-group">
+                <label for="loginUniverseId">رقم الماب للتحقق (Universe ID):</label>
+                <input type="text" id="loginUniverseId" placeholder="مثال: 1234567890">
+            </div>
+            <button onclick="verifyAndLogin()">فحص المفتاح والدخول</button>
             <div id="loginStatus" class="status-message"></div>
         </div>
     </div>
 
-    <!-- شاشة اللوحة الرئيسية -->
+    <!-- شاشة اللوحة الرئيسية (لا تفتح إلا بعد الفحص بنجاح) -->
     <div id="dashboardScreen" class="container hidden">
         <div class="header">
             <h1>📊 لوحة تحكم المابات</h1>
@@ -268,20 +272,43 @@
             }
         };
 
-        function login() {
+        async function verifyAndLogin() {
             const apiKey = document.getElementById('apiKey').value.trim();
+            const universeId = document.getElementById('loginUniverseId').value.trim();
             const statusDiv = document.getElementById('loginStatus');
 
-            if (!apiKey || apiKey.length < 10) {
-                showStatus(statusDiv, '❌ يرجى إدخال API Key صحيح وصالح.', false);
+            if (!apiKey || !universeId) {
+                showStatus(statusDiv, '❌ يرجى كتابة الـ API Key ورقم Universe ID لفحصهما.', false);
                 return;
             }
 
-            localStorage.setItem('roblox_api_key', apiKey);
-            showStatus(statusDiv, '✅ تم الحفظ! جاري فتح اللوحة...', true);
-            setTimeout(() => {
-                showDashboard();
-            }, 500);
+            showStatus(statusDiv, '⏳ جاري الفحص مع روبلوكس مباشرة...', true);
+
+            try {
+                const targetUrl = `https://apis.roblox.com/universes/v1/${universeId}`;
+                const response = await fetch(CORS_PROXY + encodeURIComponent(targetUrl), {
+                    method: 'GET',
+                    headers: { 'x-api-key': apiKey }
+                });
+
+                if (response.ok) {
+                    localStorage.setItem('roblox_api_key', apiKey);
+                    showStatus(statusDiv, '✅ تم التحقق بنجاح! جاري التوجيه...', true);
+                    setTimeout(() => showDashboard(), 600);
+                } else if (response.status === 401) {
+                    showStatus(statusDiv, '❌ الـ API Key غير صحيح!', false);
+                } else if (response.status === 403) {
+                    showStatus(statusDiv, 
+                        '⚠️ لا يوجد الصلاحيات الصحيحة!<br>' +
+                        '<b>الصلاحيات المطلوبة بالظبط:</b><br>' +
+                        '• <code>universe:read</code> أو <code>universe:write</code><br>' +
+                        '• <code>universe-place:write</code>', false);
+                } else {
+                    showStatus(statusDiv, '❌ فشل التحقق، تأكد من رقم الماب والمفتاح.', false);
+                }
+            } catch (err) {
+                showStatus(statusDiv, '❌ حدث خطأ في الاتصال بالسيرفر.', false);
+            }
         }
 
         function logout() {
@@ -303,13 +330,8 @@
             const description = document.getElementById('newPlaceDescription').value.trim();
             const statusDiv = document.getElementById('createStatus');
 
-            if (!universeId) {
-                showStatus(statusDiv, '❌ يرجى إدخال رقم الـ Universe ID.', false);
-                return;
-            }
-
-            if (!name) {
-                showStatus(statusDiv, '❌ اسم الـ Place إجباري ولا يمكن تركه فارغاً!', false);
+            if (!universeId || !name) {
+                showStatus(statusDiv, '❌ يرجى ملء كافة الحقول الإجبارية.', false);
                 return;
             }
 
@@ -323,22 +345,16 @@
                         'x-api-key': apiKey,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        title: name,
-                        description: description || ""
-                    })
+                    body: JSON.stringify({ title: name, description: description || "" })
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    showStatus(statusDiv, `🎉 تم إنشاء الـ Place بنجاح! رقم الـ ID: ${data.placeId || JSON.stringify(data)}`, true);
-                } else if (response.status === 401) {
-                    showStatus(statusDiv, `❌ مفتاح الـ API Key غير صحيح!`, false);
+                    showStatus(statusDiv, `🎉 تم إنشاء الـ Place بنجاح! الـ ID: ${data.placeId || JSON.stringify(data)}`, true);
                 } else if (response.status === 403) {
-                    showStatus(statusDiv, `⚠️ لا يوجد الصلاحيات الصحيحة!<br><b>الصلاحية المطلوبة:</b> <code>Experience Place (Write)</code>`, false);
+                    showStatus(statusDiv, '⚠️ لا يوجد الصلاحيات الصحيحة!<br>الصلاحية المطلوبة: <code>universe-place:write</code>', false);
                 } else {
-                    const errData = await response.json().catch(() => ({}));
-                    showStatus(statusDiv, `❌ فشل الإنشاء: ${errData.message || response.statusText}`, false);
+                    showStatus(statusDiv, '❌ فشل الإنشاء، تأكد من المفتاح والصلاحيات.', false);
                 }
             } catch (error) {
                 showStatus(statusDiv, `❌ خطأ في الاتصال: ${error.message}`, false);
@@ -352,13 +368,8 @@
             const description = document.getElementById('placeDescription').value.trim();
             const statusDiv = document.getElementById('updateStatus');
 
-            if (!universeId) {
-                showStatus(statusDiv, '❌ يرجى إدخال رقم الـ Universe ID.', false);
-                return;
-            }
-
-            if (!name) {
-                showStatus(statusDiv, '❌ اسم الماب الجديد إجباري!', false);
+            if (!universeId || !name) {
+                showStatus(statusDiv, '❌ يرجى ملء كافة الحقول الإجبارية.', false);
                 return;
             }
 
@@ -372,21 +383,15 @@
                         'x-api-key': apiKey,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        name: name,
-                        description: description || ""
-                    })
+                    body: JSON.stringify({ name: name, description: description || "" })
                 });
 
                 if (response.ok) {
                     showStatus(statusDiv, '✅ تم تحديث الماب بنجاح!', true);
-                } else if (response.status === 401) {
-                    showStatus(statusDiv, `❌ مفتاح الـ API Key غير صحيح!`, false);
                 } else if (response.status === 403) {
-                    showStatus(statusDiv, `⚠️ لا يوجد الصلاحيات الصحيحة!<br><b>الصلاحية المطلوبة:</b> <code>Experience Details (Write)</code>`, false);
+                    showStatus(statusDiv, '⚠️ لا يوجد الصلاحيات الصحيحة!<br>الصلاحية المطلوبة: <code>universe:write</code>', false);
                 } else {
-                    const errData = await response.json().catch(() => ({}));
-                    showStatus(statusDiv, `❌ فشل التحديث: ${errData.message || response.statusText}`, false);
+                    showStatus(statusDiv, '❌ فشل التحديث.', false);
                 }
             } catch (error) {
                 showStatus(statusDiv, `❌ خطأ في الاتصال: ${error.message}`, false);
