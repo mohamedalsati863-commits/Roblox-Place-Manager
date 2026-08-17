@@ -1,14 +1,12 @@
-/* إعدادات الخطوط والصفحة العامة */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #0f172a; /* خلفية داكنة تناسب طابع الألعاب */
+    background-color: #0f172a;
     color: #f8fafc;
     margin: 0;
     padding: 20px;
     direction: rtl;
 }
 
-/* عنوان الصفحة الرئيسي */
 .main-title {
     text-align: center;
     color: #38bdf8;
@@ -16,16 +14,14 @@ body {
     margin-bottom: 30px;
 }
 
-/* شبكة تقسيم المحتوى */
 .content-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
-/* بطاقات الأخبار والفيديوهات */
 .card {
     background-color: #1e293b;
     border-radius: 12px;
@@ -43,10 +39,26 @@ body {
     padding-bottom: 10px;
 }
 
-/* جعل الفيديوهات متجاوبة مع الشاشات */
+.btn-link {
+    display: inline-block;
+    margin-top: 15px;
+    background-color: #38bdf8;
+    color: #0f172a;
+    padding: 10px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.btn-link:hover {
+    background-color: #0284c7;
+    color: #ffffff;
+}
+
 .video-responsive {
     position: relative;
-    padding-bottom: 56.25%; /* نسبة 16:9 */
+    padding-bottom: 56.25%;
     height: 0;
     overflow: hidden;
     border-radius: 8px;
