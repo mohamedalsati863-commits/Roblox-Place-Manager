@@ -48,12 +48,6 @@ body {
     border-radius: 8px;
     text-decoration: none;
     font-weight: bold;
-    transition: background 0.2s;
-}
-
-.btn-link:hover {
-    background-color: #0284c7;
-    color: #ffffff;
 }
 
 .video-responsive {
