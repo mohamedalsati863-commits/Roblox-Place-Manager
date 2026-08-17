@@ -3,66 +3,91 @@ body {
     background-color: #0f172a;
     color: #f8fafc;
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    min-height: 100vh;
     direction: rtl;
 }
 
-.main-title {
-    text-align: center;
-    color: #38bdf8;
-    font-size: 2rem;
-    margin-bottom: 30px;
-}
-
-.content-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.card {
+.container {
     background-color: #1e293b;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 450px;
+    margin: auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     border: 1px solid #334155;
 }
 
-.card h2 {
-    color: #f59e0b;
-    font-size: 1.25rem;
-    margin-top: 0;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #334155;
-    padding-bottom: 10px;
+h1 {
+    color: #38bdf8;
+    font-size: 1.5rem;
 }
 
-.btn-link {
-    display: inline-block;
-    margin-top: 15px;
-    background-color: #38bdf8;
-    color: #0f172a;
-    padding: 10px 15px;
+.result-box {
+    background-color: #0f172a;
+    border: 2px dashed #38bdf8;
     border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+#username {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #f59e0b;
+    letter-spacing: 4px;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn {
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    color: white;
+}
+
+.btn-start {
+    background-color: #22c55e; /* أخضر */
+}
+
+.btn-start:hover:not(:disabled) {
+    background-color: #16a34a;
+}
+
+.btn-stop {
+    background-color: #ef4444; /* أحمر */
+}
+
+.btn-stop:hover:not(:disabled) {
+    background-color: #dc2626;
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-check {
+    display: inline-block;
+    color: #38bdf8;
     text-decoration: none;
+    font-size: 0.9rem;
     font-weight: bold;
 }
 
-.video-responsive {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-    border-radius: 8px;
-}
-
-.video-responsive iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
+.btn-check:hover {
+    text-decoration: underline;
 }
