@@ -1,1 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Mobile Studio Lite - 3D Engine</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body { background: #111; color: #fff; font-family: system-ui, sans-serif; overflow: hidden; }
+        
+        /* شاشة العرض 3D */
+        #viewport { width: 100vw; height: 60vh; background: #1e1e24; display: flex; align-items: center; justify-content: center; position: relative; }
+        #grid-canvas { width: 100%; height: 100%; }
 
+        /* شريط أدوات التحريك (Gizmo Mode) */
+        .gizmo-toolbar { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; background: rgba(0,0,0,0.7); padding: 6px; border-radius: 8px; }
+        .tool-btn { background: #333; color: #fff; border: 1px solid #555; padding: 8px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+        .tool-btn.active { background: #00e676; color: #000; font-weight: bold; }
+
+        /* لوحة التحكم السفلى */
+        .control-panel { height: 40vh; background: #18181c; border-top: 2px solid #333; padding: 12px; overflow-y: auto; }
+        .input-group { margin-bottom: 10px; }
+        label { display: block; font-size: 12px; color: #aaa; margin-bottom: 4px; }
+        input, select { width: 100%; padding: 8px; background: #25252b; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; }
+        
+        .row { display: flex; gap: 8px; }
+        .btn-action { background: #007acc; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <!-- منطقة عرض الـ 3D والقطع -->
+    <div id="viewport">
+        <canvas id="grid-canvas"></canvas>
+
+        <!-- أزرار أدوات التعديل (Gizmos) -->
+        <div class="gizmo-toolbar">
+            <button class="tool-btn active" onclick="setTool('select')">🖐️ Select</button>
+            <button class="tool-btn" onclick="setTool('move')">⬅️ Move</button>
+            <button class="tool-btn" onclick="setTool('rotate')">🔄 Rotate</button>
+            <button class="tool-btn" onclick="setTool('scale')">📐 Scale</button>
+        </div>
+    </div>
+
+    <!-- لوحة الخصائص والأدوات -->
+    <div class="control-panel">
+        
+        <!-- جلب العناصر بواسطة Asset ID -->
+        <div class="input-group">
+            <label>📦 جلب مجسم من Toolbox (Asset ID):</label>
+            <div class="row">
+                <input type="text" id="assetIdInput" placeholder="مثال: rbxassetid://12345678">
+                <button class="btn-action" style="width: 100px;" onclick="importAsset()">إضافة</button>
+            </div>
+        </div>
+
+        <!-- إنشاء RemoteEvent -->
+        <div class="input-group">
+            <label>⚡ إنشاء شبكة (RemoteEvent):</label>
+            <div class="row">
+                <input type="text" id="remoteName" placeholder="اسم الـ RemoteEvent">
+                <button class="btn-action" style="width: 120px; background: #e65100;" onclick="createRemote()">ربط Event</button>
+            </div>
+        </div>
+
+        <!-- تحويل الكل إلى كود Luau -->
+        <button class="btn-action" style="background: #00e676; color: #000; font-size: 16px; margin-top: 10px;" onclick="exportToRoblox()">🚀 تصدير الماب إلى Roblox Studio</button>
+
+    </div>
+
+    <script>
+        let currentTool = 'select';
+
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            console.log("الأداة المفعلة حالياً:", currentTool);
+        }
+
+        function importAsset() {
+            const id = document.getElementById('assetIdInput').value;
+            if (!id) return alert('الرجاء إدخال رقم الـ Asset ID');
+            alert(`تم إضافة المجسم [${id}] إلى البيئة مع تفعيل أدوات التحكم (${currentTool})`);
+        }
+
+        function createRemote() {
+            const name = document.getElementById('remoteName').value || 'MyRemoteEvent';
+            alert(`تم إنشاء ReplicatedStorage.${name} بنجاح!`);
+        }
+
+        function exportToRoblox() {
+            alert('جاري توليد كود Luau الشامل لبناء الماب والـ Assets والـ RemoteEvents تلقائياً...');
+        }
+    </script>
+
+</body>
+</html>
